@@ -24,6 +24,15 @@ namespace FolderSyncWithRoboCopy
         public Form1()
         {
             InitializeComponent();
+
+            Timer timer1 = new Timer { Interval = 1000 };
+            timer1.Enabled = true;
+            timer1.Tick += new EventHandler(OnTimerEvent);
+        }
+
+        private void OnTimerEvent(object sender, EventArgs e)
+        {
+            UpdateFileCount();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -38,7 +47,6 @@ namespace FolderSyncWithRoboCopy
                 sourceFolder = lines[0];
                 destinationFolder = lines[1];
             }
-            UpdateFileCount();
         }
 
         private void UpdateFileCount()
@@ -89,7 +97,6 @@ namespace FolderSyncWithRoboCopy
 
                 label_SourceFolder.Text = "Source Folder = " + sourceFolder;
             }
-            UpdateFileCount();
         }
 
         private void button_ChangeDestinationFolder_Click(object sender, EventArgs e)
@@ -104,7 +111,6 @@ namespace FolderSyncWithRoboCopy
 
                 label_DestinationFolder.Text = "Destination Folder = " + destinationFolder;
             }
-            UpdateFileCount();
         }
 
         private void button_StartSyncing_Click(object sender, EventArgs e)
@@ -136,7 +142,6 @@ namespace FolderSyncWithRoboCopy
             {
                 MessageBox.Show("Please select valid directories!", caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            UpdateFileCount();
         }
 
         private void WriteToLogFile(string logFile, Exception ex)
