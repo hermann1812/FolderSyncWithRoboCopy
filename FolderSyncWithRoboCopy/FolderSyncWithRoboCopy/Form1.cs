@@ -9,17 +9,17 @@ namespace FolderSyncWithRoboCopy
     public partial class Form1 : Form
     {
         // Caption for MessageBox
-        readonly string caption = "One Way Folder Sync - " + Assembly.GetEntryAssembly().GetName().Version;
+        readonly string caption = "Folder Sync With RoboCopy - " + Assembly.GetEntryAssembly().GetName().Version;
 
         // Source and destination folder
         string sourceFolder = string.Empty;
         string destinationFolder = string.Empty;
 
         // The last used directories will be saved in this text file
-        string txtFile = Path.Combine(Path.GetTempPath(), "OneWayFolderSync.txt");
+        string txtFile = Path.Combine(Path.GetTempPath(), "FolderSyncWithRoboCopy.txt");
 
         // Errors will be logged in this text file
-        string logFile = Path.Combine(Path.GetTempPath(), "OneWayFolderSync.log");
+        string logFile = Path.Combine(Path.GetTempPath(), "FolderSyncWithRoboCopy.log");
 
         public Form1()
         {
