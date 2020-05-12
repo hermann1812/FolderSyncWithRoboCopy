@@ -36,6 +36,7 @@
             this.label_SourceAvailable = new System.Windows.Forms.Label();
             this.label_DestinationAvailable = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.label_Attention = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label_SourceFolder
@@ -113,11 +114,24 @@
             this.label1.TabIndex = 7;
             this.label1.Text = "Files may be deleted in the destination folder.";
             // 
+            // label_Attention
+            // 
+            this.label_Attention.AutoSize = true;
+            this.label_Attention.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_Attention.Location = new System.Drawing.Point(318, 58);
+            this.label_Attention.Name = "label_Attention";
+            this.label_Attention.Size = new System.Drawing.Size(230, 48);
+            this.label_Attention.TabIndex = 8;
+            this.label_Attention.Text = "Attention!\r\nThere are more files in the destination\r\nfolder than in the source fo" +
+    "lder!";
+            this.label_Attention.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(560, 163);
+            this.Controls.Add(this.label_Attention);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label_DestinationAvailable);
             this.Controls.Add(this.label_SourceAvailable);
@@ -147,6 +161,7 @@
         private System.Windows.Forms.Label label_SourceAvailable;
         private System.Windows.Forms.Label label_DestinationAvailable;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label_Attention;
     }
 }
 

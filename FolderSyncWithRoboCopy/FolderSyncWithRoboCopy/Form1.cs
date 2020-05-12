@@ -65,6 +65,15 @@ namespace FolderSyncWithRoboCopy
             {
                 button_StartSyncing.Enabled = false;
             }
+
+            if (CountFiles(destinationFolder) > CountFiles(sourceFolder))
+            {
+                label_Attention.Visible = true;
+            }
+            else
+            {
+                label_Attention.Visible = false;
+            }
         }
 
         private int CountFiles(string folder)
