@@ -37,6 +37,7 @@
             this.label_DestinationAvailable = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label_Attention = new System.Windows.Forms.Label();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.SuspendLayout();
             // 
             // label_SourceFolder
@@ -118,13 +119,19 @@
             // 
             this.label_Attention.AutoSize = true;
             this.label_Attention.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_Attention.Location = new System.Drawing.Point(318, 58);
+            this.label_Attention.Location = new System.Drawing.Point(322, 99);
             this.label_Attention.Name = "label_Attention";
             this.label_Attention.Size = new System.Drawing.Size(230, 48);
             this.label_Attention.TabIndex = 8;
             this.label_Attention.Text = "Attention!\r\nThere are more files in the destination\r\nfolder than in the source fo" +
     "lder!";
             this.label_Attention.Visible = false;
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.WorkerReportsProgress = true;
+            this.backgroundWorker1.WorkerSupportsCancellation = true;
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             // 
             // Form1
             // 
@@ -145,6 +152,7 @@
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Folder Sync With RoboCopy";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -162,6 +170,7 @@
         private System.Windows.Forms.Label label_DestinationAvailable;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label_Attention;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
 

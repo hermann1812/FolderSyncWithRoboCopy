@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace FolderSyncWithRoboCopy
@@ -21,22 +22,17 @@ namespace FolderSyncWithRoboCopy
         // Errors will be logged in this text file
         string logFile = Path.Combine(Path.GetTempPath(), "FolderSyncWithRoboCopy.log");
 
+        // Bool to stop the BackgroundWorker
+        bool weitermachen = true;
+
         public Form1()
         {
             InitializeComponent();
-
-            Timer timer1 = new Timer { Interval = 1000 };
-            timer1.Enabled = true;
-            timer1.Tick += new EventHandler(OnTimerEvent);
-        }
-
-        private void OnTimerEvent(object sender, EventArgs e)
-        {
-            UpdateFileCount();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            // Caption for form
             Text = caption;
 
             // If available read the paths of last used directories
@@ -47,35 +43,36 @@ namespace FolderSyncWithRoboCopy
                 sourceFolder = lines[0];
                 destinationFolder = lines[1];
             }
+
+            // Start BackgroundWorker
+            backgroundWorker1.RunWorkerAsync();
         }
 
         private void UpdateFileCount()
         {
-            label_SourceFolder.Text = "Source Folder = " + sourceFolder;
-            label_DestinationFolder.Text = "Destination Folder = " + destinationFolder;
+            // Shows the number of files in the source and destination folder
+            label_SourceFolder.Invoke((MethodInvoker)(() => label_SourceFolder.Text = "Source Folder = " + sourceFolder));
+            label_DestinationFolder.Invoke((MethodInvoker)(() => label_DestinationFolder.Text = "Destination Folder = " + destinationFolder));
 
-            label_SourceAvailable.Text = CountFiles(sourceFolder) + " files currently available";
-            label_DestinationAvailable.Text = CountFiles(destinationFolder) + " files currently available";
+            label_SourceAvailable.Invoke((MethodInvoker)(() => label_SourceAvailable.Text = CountFiles(sourceFolder) + " files currently available"));
+            label_DestinationAvailable.Invoke((MethodInvoker)(() => label_DestinationAvailable.Text = CountFiles(destinationFolder) + " files currently available"));
 
-            if (CountFiles(sourceFolder) != CountFiles(destinationFolder))
-            {
-                button_StartSyncing.Enabled = true;
-            }
-            else
-            {
-                button_StartSyncing.Enabled = false;
-            }
-
+            // Shows a warning message if there are already more files in the destination folder than in the source folder
             if (CountFiles(destinationFolder) > CountFiles(sourceFolder))
             {
-                label_Attention.Visible = true;
+                label_Attention.Invoke((MethodInvoker)(() => label_Attention.Visible = true));
             }
             else
             {
-                label_Attention.Visible = false;
+                label_Attention.Invoke((MethodInvoker)(() => label_Attention.Visible = false));
             }
         }
 
+        /// <summary>
+        /// Method to count the files in a directory and its subdirectories
+        /// </summary>
+        /// <param name="folder"></param>
+        /// <returns></returns>
         private int CountFiles(string folder)
         {
             int fCount = 0;
@@ -94,6 +91,11 @@ namespace FolderSyncWithRoboCopy
             return fCount;
         }
 
+        /// <summary>
+        /// Method to change the source folder
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button_ChangeSourceFolder_Click(object sender, EventArgs e)
         {
             var fbd = new FolderBrowserDialog();
@@ -108,6 +110,11 @@ namespace FolderSyncWithRoboCopy
             }
         }
 
+        /// <summary>
+        /// Method to change the destination folder
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button_ChangeDestinationFolder_Click(object sender, EventArgs e)
         {
             var fbd = new FolderBrowserDialog();
@@ -122,15 +129,17 @@ namespace FolderSyncWithRoboCopy
             }
         }
 
+        /// <summary>
+        /// Method to start the syncing process
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button_StartSyncing_Click(object sender, EventArgs e)
         {
             if (Directory.Exists(sourceFolder) && Directory.Exists(destinationFolder))
             {
                 if (sourceFolder != destinationFolder)
                 {
-                    // During syncing button will be disabled
-                    //button_StartSyncing.Enabled = false;
-
                     // Save the last used folder paths
                     if (File.Exists(txtFile)) { File.Delete(txtFile); }
                     File.WriteAllText(txtFile, sourceFolder + "\r\n" + destinationFolder);
@@ -149,10 +158,25 @@ namespace FolderSyncWithRoboCopy
             }
             else
             {
-                MessageBox.Show("Please select valid directories!", caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Source folder cannot be accessed
+                if (!Directory.Exists(sourceFolder))
+                {
+                    MessageBox.Show("Please select valid source folder!", caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                // Destination folder cannot be accessed
+                if (!Directory.Exists(destinationFolder))
+                {
+                    MessageBox.Show("Please select valid destination folder!", caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
+        /// <summary>
+        /// Method to write to log-file
+        /// </summary>
+        /// <param name="logFile"></param>
+        /// <param name="ex"></param>
         private void WriteToLogFile(string logFile, Exception ex)
         {
             MessageBox.Show(ex.ToString(), caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -164,6 +188,35 @@ namespace FolderSyncWithRoboCopy
             else
             {
                 File.WriteAllText(logFile, "\r\n=========> " + DateTime.Now + " <=========\r\n" + ex.ToString());
+            }
+        }
+
+        /// <summary>
+        /// BackgroundWorker
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            while (weitermachen)
+            {
+                UpdateFileCount();
+                Thread.Sleep(1000);
+            }
+        }
+
+        /// <summary>
+        /// Program exit
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Stop BackgroundWorker
+            if (backgroundWorker1.IsBusy)
+            {
+                weitermachen = false;
+                backgroundWorker1.CancelAsync();
             }
         }
     }
