@@ -119,6 +119,7 @@
             // 
             this.label_Attention.AutoSize = true;
             this.label_Attention.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_Attention.ForeColor = System.Drawing.Color.Red;
             this.label_Attention.Location = new System.Drawing.Point(322, 99);
             this.label_Attention.Name = "label_Attention";
             this.label_Attention.Size = new System.Drawing.Size(230, 48);

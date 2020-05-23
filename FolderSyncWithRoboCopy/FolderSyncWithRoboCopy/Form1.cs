@@ -153,7 +153,7 @@ namespace FolderSyncWithRoboCopy
                     //process.StartInfo.CreateNoWindow = true;
 
                     process.Start();
-                    process.WaitForExit();
+                    //process.WaitForExit();
                 }
             }
             else
@@ -201,7 +201,7 @@ namespace FolderSyncWithRoboCopy
             while (weitermachen)
             {
                 UpdateFileCount();
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
             }
         }
 
