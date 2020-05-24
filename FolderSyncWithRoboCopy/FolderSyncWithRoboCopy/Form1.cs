@@ -136,6 +136,8 @@ namespace FolderSyncWithRoboCopy
         /// <param name="e"></param>
         private void button_StartSyncing_Click(object sender, EventArgs e)
         {
+            button_StartSyncing.Enabled = false;
+
             if (Directory.Exists(sourceFolder) && Directory.Exists(destinationFolder))
             {
                 if (sourceFolder != destinationFolder)
@@ -148,12 +150,10 @@ namespace FolderSyncWithRoboCopy
                     Process process = new Process();
                     process.StartInfo.FileName = "robocopy";
                     process.StartInfo.Arguments = " /MIR \"" + sourceFolder + "\" \"" + destinationFolder + "\"";
-
-                    //process.StartInfo.UseShellExecute = false;
-                    //process.StartInfo.CreateNoWindow = true;
-
+                    process.StartInfo.UseShellExecute = false;
+                    process.StartInfo.CreateNoWindow = true;
                     process.Start();
-                    //process.WaitForExit();
+                    process.WaitForExit();
                 }
             }
             else
@@ -170,6 +170,7 @@ namespace FolderSyncWithRoboCopy
                     MessageBox.Show("Please select valid destination folder!", caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+            button_StartSyncing.Enabled = true;
         }
 
         /// <summary>
