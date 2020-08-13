@@ -148,8 +148,6 @@ namespace FolderSyncWithRoboCopy
         /// <param name="e"></param>
         private void button_StartSyncing_Click(object sender, EventArgs e)
         {
-            button_StartSyncing.Enabled = false;
-
             if (Directory.Exists(sourceFolder) && Directory.Exists(destinationFolder))
             {
                 if (sourceFolder != destinationFolder)
@@ -172,11 +170,12 @@ namespace FolderSyncWithRoboCopy
                     MessageBox.Show("Please select valid destination folder!", caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-            button_StartSyncing.Enabled = true;
         }
 
         private void ThreadStartCopy()
         {
+            button_StartSyncing.Invoke((MethodInvoker)(() => button_StartSyncing.Enabled = false));
+
             SetProgressBarAnimationSpeed(30);
 
             // Save the last used folder paths
@@ -195,6 +194,8 @@ namespace FolderSyncWithRoboCopy
             process.WaitForExit();
 
             SetProgressBarAnimationSpeed(0);
+
+            button_StartSyncing.Invoke((MethodInvoker)(() => button_StartSyncing.Enabled = true));
         }
 
         /// <summary>
@@ -248,8 +249,9 @@ namespace FolderSyncWithRoboCopy
         /// <param name="e"></param>
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            oThreadUpdateLabel.Abort();
-            oThreadStartCopy.Abort();
+            if (oThreadUpdateLabel != null) { oThreadUpdateLabel.Abort(); }
+
+            if (oThreadStartCopy != null) { oThreadStartCopy.Abort(); }
         }
     }
 }
