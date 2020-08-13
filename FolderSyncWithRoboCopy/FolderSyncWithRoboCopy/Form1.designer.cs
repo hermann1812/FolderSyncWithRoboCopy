@@ -37,7 +37,7 @@
             this.label_DestinationAvailable = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label_Attention = new System.Windows.Forms.Label();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // label_SourceFolder
@@ -128,17 +128,20 @@
     "lder!";
             this.label_Attention.Visible = false;
             // 
-            // backgroundWorker1
+            // progressBar1
             // 
-            this.backgroundWorker1.WorkerReportsProgress = true;
-            this.backgroundWorker1.WorkerSupportsCancellation = true;
-            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.progressBar1.Location = new System.Drawing.Point(12, 162);
+            this.progressBar1.MarqueeAnimationSpeed = 0;
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(536, 23);
+            this.progressBar1.TabIndex = 9;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(560, 163);
+            this.ClientSize = new System.Drawing.Size(560, 194);
+            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.label_Attention);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label_DestinationAvailable);
@@ -171,7 +174,7 @@
         private System.Windows.Forms.Label label_DestinationAvailable;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label_Attention;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }
 
