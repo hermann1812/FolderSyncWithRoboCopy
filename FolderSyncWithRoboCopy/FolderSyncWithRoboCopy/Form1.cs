@@ -19,7 +19,7 @@ namespace FolderSyncWithRoboCopy
         // The last used directories will be saved in this text file
         string txtFile = Path.Combine(Path.GetTempPath(), "FolderSyncWithRoboCopy.txt");
 
-        // Errors will be logged in this text file
+        // Errors will be logged in this text file (currently not used)
         string logFile = Path.Combine(Path.GetTempPath(), "FolderSyncWithRoboCopy.log");
 
         // OOOOOOOO
@@ -91,16 +91,14 @@ namespace FolderSyncWithRoboCopy
 
             if (Directory.Exists(folder))
             {
-                try
-                {
-                    fCount = Directory.GetFiles(folder, "*", SearchOption.AllDirectories).Length;
-                }
-                catch (Exception ex)
-                {
-                    WriteToLogFile(logFile, ex);
-                }
+                fCount = Directory.GetFiles(folder, "*", SearchOption.AllDirectories).Length;
+
+                return fCount;
             }
-            return fCount;
+            else
+            {
+                return -1;
+            }
         }
 
         /// <summary>
