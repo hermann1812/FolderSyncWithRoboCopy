@@ -91,7 +91,15 @@ namespace FolderSyncWithRoboCopy
 
             if (Directory.Exists(folder))
             {
-                fCount = Directory.GetFiles(folder, "*", SearchOption.AllDirectories).Length;
+                try
+                {
+                    fCount = Directory.GetFiles(folder, "*", SearchOption.AllDirectories).Length;
+                }
+                catch (Exception ex)
+                {
+                    oThreadUpdateLabel.Abort();
+                    MessageBox.Show("Exception = " + ex);
+                }
 
                 return fCount;
             }
