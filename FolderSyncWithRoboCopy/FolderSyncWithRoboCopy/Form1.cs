@@ -97,8 +97,7 @@ namespace FolderSyncWithRoboCopy
                 }
                 catch (Exception ex)
                 {
-                    oThreadUpdateLabel.Abort();
-                    MessageBox.Show("Exception = " + ex);
+                    MessageBox.Show("Exception = " + ex, caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 return fCount;
