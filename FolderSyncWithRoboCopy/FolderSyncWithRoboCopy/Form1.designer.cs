@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.label_SourceFolder = new System.Windows.Forms.Label();
             this.button_ChangeSourceFolder = new System.Windows.Forms.Button();
             this.button_ChangeDestinationFolder = new System.Windows.Forms.Button();
@@ -152,6 +153,7 @@
             this.Controls.Add(this.button_ChangeSourceFolder);
             this.Controls.Add(this.label_SourceFolder);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
