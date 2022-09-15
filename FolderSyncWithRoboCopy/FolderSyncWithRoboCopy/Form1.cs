@@ -22,21 +22,7 @@ namespace FolderSyncWithRoboCopy
         // Errors will be logged in this text file (currently not used)
         string logFile = Path.Combine(Path.GetTempPath(), "FolderSyncWithRoboCopy.log");
 
-        // OOOOOOOO
-        Thread oThreadUpdateLabel;
-        Thread oThreadStartCopy;
-
         public Form1()
-        {
-            InitializeComponent();
-        }
-
-        /// <summary>
-        /// Things to be done when form is loaded
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Form1_Load(object sender, EventArgs e)
         {
             // Caption for form
             Text = caption;
@@ -50,33 +36,29 @@ namespace FolderSyncWithRoboCopy
                 destinationFolder = lines[1];
             }
 
-            // Starts thread which shows the number of files in the directories
-            oThreadUpdateLabel = new Thread(new ThreadStart(ThreadUpdateLabels));
-            oThreadUpdateLabel.Start();
+            InitializeComponent();
         }
 
         /// <summary>
-        /// Thread which updates the labels showing the number of files in the source and destination folder
+        /// Things to be done when form is loaded
         /// </summary>
-        private void ThreadUpdateLabels()
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Form1_Load(object sender, EventArgs e)
         {
-            while (true)
-            {
-                // Shows the number of files in the source and destination folder
-                label_SourceFolder.Invoke((MethodInvoker)(() => label_SourceFolder.Text = "Source Folder = " + sourceFolder));
-                label_DestinationFolder.Invoke((MethodInvoker)(() => label_DestinationFolder.Text = "Destination Folder = " + destinationFolder));
-                label_SourceAvailable.Invoke((MethodInvoker)(() => label_SourceAvailable.Text = CountFiles(sourceFolder) + " files currently available"));
-                label_DestinationAvailable.Invoke((MethodInvoker)(() => label_DestinationAvailable.Text = CountFiles(destinationFolder) + " files currently available"));
+            label_SourceFolder.Text = "Source Folder = " + sourceFolder;
+            label_DestinationFolder.Text = "Destination Folder = " + destinationFolder;
 
-                // Shows a warning message if there are already more files in the destination folder than in the source folder
-                if (CountFiles(destinationFolder) > CountFiles(sourceFolder))
-                {
-                    label_Attention.Invoke((MethodInvoker)(() => label_Attention.Visible = true));
-                }
-                else
-                {
-                    label_Attention.Invoke((MethodInvoker)(() => label_Attention.Visible = false));
-                }
+            label_SourceAvailable.Text = CountFiles(sourceFolder) + " files currently available";
+            label_DestinationAvailable.Text = CountFiles(destinationFolder) + " files currently available";
+
+            if (CountFiles(destinationFolder) > CountFiles(sourceFolder))
+            {
+                label_Attention.Visible = true;
+            }
+            else
+            {
+                label_Attention.Visible = false;
             }
         }
 
@@ -87,34 +69,9 @@ namespace FolderSyncWithRoboCopy
         /// <returns></returns>
         private int CountFiles(string folder)
         {
-            int fCount = 0;
-
             if (Directory.Exists(folder))
             {
-                int x = 0;
-
-                TryAgain:
-
-                try
-                {
-                    fCount = Directory.GetFiles(folder, "*", SearchOption.AllDirectories).Length;
-                }
-                catch (Exception ex)
-                {
-                    x = x + 1;
-
-                    if (x < 4)
-                    {
-                        Thread.Sleep(1000);
-                        goto TryAgain;
-                    }
-                    else
-                    {
-                        MessageBox.Show("Exception = " + ex, caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                }
-
-                return fCount;
+                return Directory.GetFiles(folder, "*", SearchOption.AllDirectories).Length;
             }
             else
             {
@@ -139,6 +96,8 @@ namespace FolderSyncWithRoboCopy
 
                 label_SourceFolder.Text = "Source Folder = " + sourceFolder;
             }
+
+            Form1_Load(null, null);
         }
 
         /// <summary>
@@ -158,6 +117,8 @@ namespace FolderSyncWithRoboCopy
 
                 label_DestinationFolder.Text = "Destination Folder = " + destinationFolder;
             }
+
+            Form1_Load(null, null);
         }
 
         /// <summary>
@@ -171,8 +132,24 @@ namespace FolderSyncWithRoboCopy
             {
                 if (sourceFolder != destinationFolder)
                 {
-                    oThreadStartCopy = new Thread(new ThreadStart(ThreadStartCopy));
-                    oThreadStartCopy.Start();
+                    // Save the last used folder paths
+                    if (File.Exists(txtFile)) { File.Delete(txtFile); }
+                    File.WriteAllText(txtFile, sourceFolder + "\r\n" + destinationFolder);
+
+                    // Start syncing by using the Windows command "Robocopy"
+                    Process process = new Process();
+                    process.StartInfo.FileName = "robocopy";
+                    process.StartInfo.Arguments = " /MIR \"" + sourceFolder + "\" \"" + destinationFolder + "\"";
+
+                    process.StartInfo.UseShellExecute = false;
+                    process.StartInfo.CreateNoWindow = false;
+
+                    process.Start();
+                    process.WaitForExit();
+                }
+                else
+                {
+                    MessageBox.Show("Please select 2 different folder!", caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else
@@ -189,88 +166,7 @@ namespace FolderSyncWithRoboCopy
                     MessageBox.Show("Please select valid destination folder!", caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-        }
-
-        private void ThreadStartCopy()
-        {
-            button_StartSyncing.Invoke((MethodInvoker)(() => button_StartSyncing.Enabled = false));
-
-            SetProgressBarAnimationSpeed(30);
-
-            // Save the last used folder paths
-            if (File.Exists(txtFile)) { File.Delete(txtFile); }
-            File.WriteAllText(txtFile, sourceFolder + "\r\n" + destinationFolder);
-
-            // Start syncing by using the Windows command "Robocopy"
-            Process process = new Process();
-            process.StartInfo.FileName = "robocopy";
-            process.StartInfo.Arguments = " /MIR \"" + sourceFolder + "\" \"" + destinationFolder + "\"";
-
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.CreateNoWindow = true;
-
-            process.Start();
-            process.WaitForExit();
-
-            SetProgressBarAnimationSpeed(0);
-
-            button_StartSyncing.Invoke((MethodInvoker)(() => button_StartSyncing.Enabled = true));
-        }
-
-        /// <summary>
-        /// Method to write to log-file
-        /// </summary>
-        /// <param name="logFile"></param>
-        /// <param name="ex"></param>
-        private void WriteToLogFile(string logFile, Exception ex)
-        {
-            MessageBox.Show(ex.ToString(), caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-            if (File.Exists(logFile))
-            {
-                File.AppendAllText(logFile, "\r\n=========> " + DateTime.Now + " <=========\r\n" + ex.ToString());
-            }
-            else
-            {
-                File.WriteAllText(logFile, "\r\n=========> " + DateTime.Now + " <=========\r\n" + ex.ToString());
-            }
-        }
-
-        private delegate void SetProgressBarAnimationSpeedDelegate(int animationSpeed);
-
-        private void SetProgressBarAnimationSpeed(int animationSpeed)
-        {
-            if (progressBar1.InvokeRequired)
-            {
-                progressBar1.Invoke(new SetProgressBarAnimationSpeedDelegate(SetProgressBarAnimationSpeed), animationSpeed);
-            }
-            else
-            {
-                //0000
-                progressBar1.MarqueeAnimationSpeed = animationSpeed;
-
-                if (animationSpeed == 0)
-                {
-                    progressBar1.Value = 0;
-                    progressBar1.Style = ProgressBarStyle.Blocks;
-                }
-                else
-                {
-                    progressBar1.Style = ProgressBarStyle.Marquee;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Method to stop all running threads
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (oThreadUpdateLabel != null) { oThreadUpdateLabel.Abort(); }
-
-            if (oThreadStartCopy != null) { oThreadStartCopy.Abort(); }
+            Form1_Load(null, null);
         }
     }
 }

@@ -38,7 +38,6 @@
             this.label_DestinationAvailable = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label_Attention = new System.Windows.Forms.Label();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // label_SourceFolder
@@ -129,20 +128,11 @@
     "lder!";
             this.label_Attention.Visible = false;
             // 
-            // progressBar1
-            // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 162);
-            this.progressBar1.MarqueeAnimationSpeed = 0;
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(536, 23);
-            this.progressBar1.TabIndex = 9;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(560, 194);
-            this.Controls.Add(this.progressBar1);
+            this.ClientSize = new System.Drawing.Size(560, 165);
             this.Controls.Add(this.label_Attention);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label_DestinationAvailable);
@@ -158,7 +148,6 @@
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Folder Sync With RoboCopy";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -176,7 +165,6 @@
         private System.Windows.Forms.Label label_DestinationAvailable;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label_Attention;
-        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }
 
