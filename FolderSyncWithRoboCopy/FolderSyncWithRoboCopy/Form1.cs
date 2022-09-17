@@ -128,6 +128,8 @@ namespace FolderSyncWithRoboCopy
         /// <param name="e"></param>
         private void button_StartSyncing_Click(object sender, EventArgs e)
         {
+            textBox1.Clear();
+
             if (Directory.Exists(sourceFolder) && Directory.Exists(destinationFolder))
             {
                 if (sourceFolder != destinationFolder)
@@ -142,10 +144,22 @@ namespace FolderSyncWithRoboCopy
                     process.StartInfo.Arguments = " /MIR \"" + sourceFolder + "\" \"" + destinationFolder + "\"";
 
                     process.StartInfo.UseShellExecute = false;
-                    process.StartInfo.CreateNoWindow = false;
+                    process.StartInfo.CreateNoWindow = true;
+
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.StartInfo.RedirectStandardError = true;
+                    process.StartInfo.RedirectStandardInput = true;
 
                     process.Start();
+
+                    string stdOutput = process.StandardOutput.ReadToEnd();
+                    string stdError = process.StandardError.ReadToEnd();
+
                     process.WaitForExit();
+
+                    textBox1.AppendText(stdOutput);
+                    textBox1.AppendText(stdError);
+                    textBox1.ScrollToCaret();
                 }
                 else
                 {

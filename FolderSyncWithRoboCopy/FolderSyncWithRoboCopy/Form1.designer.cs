@@ -38,6 +38,7 @@
             this.label_DestinationAvailable = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label_Attention = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label_SourceFolder
@@ -128,11 +129,22 @@
     "lder!";
             this.label_Attention.Visible = false;
             // 
+            // textBox1
+            // 
+            this.textBox1.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox1.Location = new System.Drawing.Point(12, 170);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBox1.Size = new System.Drawing.Size(534, 139);
+            this.textBox1.TabIndex = 9;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(560, 165);
+            this.ClientSize = new System.Drawing.Size(558, 321);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label_Attention);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label_DestinationAvailable);
@@ -165,6 +177,7 @@
         private System.Windows.Forms.Label label_DestinationAvailable;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label_Attention;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 
