@@ -142,24 +142,22 @@ namespace FolderSyncWithRoboCopy
                     Process process = new Process();
                     process.StartInfo.FileName = "robocopy";
                     process.StartInfo.Arguments = " /MIR \"" + sourceFolder + "\" \"" + destinationFolder + "\"";
-
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.CreateNoWindow = true;
-
                     process.StartInfo.RedirectStandardOutput = true;
-                    process.StartInfo.RedirectStandardError = true;
-                    process.StartInfo.RedirectStandardInput = true;
 
                     process.Start();
 
-                    string stdOutput = process.StandardOutput.ReadToEnd();
-                    string stdError = process.StandardError.ReadToEnd();
+                    StreamReader reader = process.StandardOutput;
+
+                    while (!reader.EndOfStream)
+                    {
+                        textBox1.AppendText(reader.ReadLine());
+                    }
+
+                    reader.Close();
 
                     process.WaitForExit();
-
-                    textBox1.AppendText(stdOutput);
-                    textBox1.AppendText(stdError);
-                    textBox1.ScrollToCaret();
                 }
                 else
                 {
