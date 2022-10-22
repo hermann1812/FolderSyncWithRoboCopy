@@ -149,13 +149,10 @@ namespace FolderSyncWithRoboCopy
 
                     process.Start();
 
-                    // Codepage 850
-                    StreamReader reader = new StreamReader(process.StandardOutput.BaseStream, Encoding.GetEncoding(850)); 
+                    // Codepage 850 will be used
+                    StreamReader reader = new StreamReader(process.StandardOutput.BaseStream, Encoding.GetEncoding(850));
 
-                    while (!reader.EndOfStream)
-                    {
-                        textBox1.AppendText(reader.ReadToEnd());
-                    }
+                    textBox1.AppendText(reader.ReadToEnd());
 
                     reader.Close();
 
