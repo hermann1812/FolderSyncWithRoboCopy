@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -148,11 +149,12 @@ namespace FolderSyncWithRoboCopy
 
                     process.Start();
 
-                    StreamReader reader = process.StandardOutput;
+                    // Codepage 850
+                    StreamReader reader = new StreamReader(process.StandardOutput.BaseStream, Encoding.GetEncoding(850)); 
 
                     while (!reader.EndOfStream)
                     {
-                        textBox1.AppendText(reader.ReadLine());
+                        textBox1.AppendText(reader.ReadToEnd());
                     }
 
                     reader.Close();
