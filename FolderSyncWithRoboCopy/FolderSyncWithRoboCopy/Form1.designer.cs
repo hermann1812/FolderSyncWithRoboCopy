@@ -39,6 +39,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label_Attention = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label_SourceFolder
@@ -123,7 +124,7 @@
             this.label_Attention.ForeColor = System.Drawing.Color.Red;
             this.label_Attention.Location = new System.Drawing.Point(322, 99);
             this.label_Attention.Name = "label_Attention";
-            this.label_Attention.Size = new System.Drawing.Size(230, 48);
+            this.label_Attention.Size = new System.Drawing.Size(229, 48);
             this.label_Attention.TabIndex = 8;
             this.label_Attention.Text = "Attention!\r\nThere are more files in the destination\r\nfolder than in the source fo" +
     "lder!";
@@ -139,11 +140,25 @@
             this.textBox1.Size = new System.Drawing.Size(534, 139);
             this.textBox1.TabIndex = 9;
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Checked = true;
+            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox1.Location = new System.Drawing.Point(423, 25);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(123, 17);
+            this.checkBox1.TabIndex = 10;
+            this.checkBox1.Text = "Protokolldatei öffnen";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(558, 321);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label_Attention);
             this.Controls.Add(this.label1);
@@ -178,6 +193,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label_Attention;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 

@@ -23,6 +23,11 @@ namespace FolderSyncWithRoboCopy
         // Errors will be logged in this text file (currently not used)
         string logFile = Path.Combine(Path.GetTempPath(), "FolderSyncWithRoboCopy.log");
 
+        // Journal file
+        string journalFile = Path.Combine(Path.GetTempPath(), "robocopy_log.txt");
+
+        bool showJournal = true;
+
         public Form1()
         {
             // Caption for form
@@ -142,7 +147,7 @@ namespace FolderSyncWithRoboCopy
                     // Start syncing by using the Windows command "Robocopy"
                     Process process = new Process();
                     process.StartInfo.FileName = "robocopy";
-                    process.StartInfo.Arguments = " /MIR \"" + sourceFolder + "\" \"" + destinationFolder + "\"";
+                    process.StartInfo.Arguments = " /MIR \"" + sourceFolder + "\" \"" + destinationFolder + "\"" + " /tee /log:" + journalFile;
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.CreateNoWindow = true;
                     process.StartInfo.RedirectStandardOutput = true;
@@ -157,6 +162,12 @@ namespace FolderSyncWithRoboCopy
                     reader.Close();
 
                     process.WaitForExit();
+
+                    // Show Log File
+                    if (showJournal)
+                    {
+                        Process.Start(journalFile);
+                    }
                 }
                 else
                 {
@@ -178,6 +189,18 @@ namespace FolderSyncWithRoboCopy
                 }
             }
             Form1_Load(null, null);
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+            {
+                showJournal = true;
+            }
+            else
+            {
+                showJournal = false;
+            }
         }
     }
 }
