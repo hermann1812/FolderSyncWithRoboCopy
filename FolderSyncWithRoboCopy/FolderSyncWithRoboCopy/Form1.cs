@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace FolderSyncWithRoboCopy
 {
@@ -147,21 +148,12 @@ namespace FolderSyncWithRoboCopy
                     // Start syncing by using the Windows command "Robocopy"
                     Process process = new Process();
                     process.StartInfo.FileName = "robocopy";
-                    process.StartInfo.Arguments = " /MIR \"" + sourceFolder + "\" \"" + destinationFolder + "\"" + " /tee /log:" + journalFile;
+                    process.StartInfo.Arguments = " " + sourceFolder + " " + destinationFolder + " /mir /tee /unilog:" + journalFile;
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.CreateNoWindow = true;
-                    process.StartInfo.RedirectStandardOutput = true;
-
                     process.Start();
 
-                    // Codepage 850 will be used
-                    StreamReader reader = new StreamReader(process.StandardOutput.BaseStream, Encoding.GetEncoding(850));
-
-                    textBox1.AppendText(reader.ReadToEnd());
-
-                    reader.Close();
-
-                    process.WaitForExit();
+                    textBox1.Text = File.ReadAllText(journalFile);
 
                     // Show Log File
                     if (showJournal)
