@@ -154,6 +154,8 @@ namespace FolderSyncWithRoboCopy
                     process.Start();
 
                     textBox1.Text = File.ReadAllText(journalFile);
+                    textBox1.Focus();
+                    textBox1.ScrollToCaret();
 
                     // Show Log File
                     if (showJournal)
