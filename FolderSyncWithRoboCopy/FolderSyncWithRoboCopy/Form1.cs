@@ -152,7 +152,10 @@ namespace FolderSyncWithRoboCopy
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.CreateNoWindow = true;
                     process.Start();
+                    process.WaitForExit();
 
+                    // Output to TextBox
+                    textBox1.Clear();
                     textBox1.Text = File.ReadAllText(journalFile);
                     textBox1.Focus();
                     textBox1.ScrollToCaret();
