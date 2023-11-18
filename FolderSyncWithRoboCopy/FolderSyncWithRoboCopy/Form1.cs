@@ -25,7 +25,7 @@ namespace FolderSyncWithRoboCopy
         // Journal file
         string journal = Path.Combine(Path.GetTempPath(), "FolderSync_Journal.txt");
 
-        bool showJournal = true;
+        bool showJournal = false;
 
         int filesInSourceFolder = -1;
         int filesInDesinationFolder = -1;
@@ -181,8 +181,6 @@ namespace FolderSyncWithRoboCopy
 
             // Output to TextBox
             Invoke((MethodInvoker)delegate () { textBox1.Text = File.ReadAllText(journal); });
-            Invoke((MethodInvoker)delegate () { textBox1.Focus(); });
-            Invoke((MethodInvoker)delegate () { textBox1.ScrollToCaret(); });
 
             // Show Log File
             if (showJournal)
@@ -196,7 +194,6 @@ namespace FolderSyncWithRoboCopy
 
             Invoke((MethodInvoker)delegate () { Form1_Load(null, null); });
         }
-
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox1.Checked)
@@ -207,6 +204,8 @@ namespace FolderSyncWithRoboCopy
             {
                 showJournal = false;
             }
+
+            Form1_Load(null, null);
         }
     }
 }
