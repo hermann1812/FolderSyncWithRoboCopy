@@ -2,10 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace FolderSyncWithRoboCopy
 {
@@ -19,15 +17,18 @@ namespace FolderSyncWithRoboCopy
         string destinationFolder = string.Empty;
 
         // The last used directories will be saved in this text file
-        string txtFile = Path.Combine(Path.GetTempPath(), "FolderSyncWithRoboCopy.txt");
+        string directories = Path.Combine(Path.GetTempPath(), "FolderSync_Directories.txt");
 
         // Errors will be logged in this text file (currently not used)
-        string logFile = Path.Combine(Path.GetTempPath(), "FolderSyncWithRoboCopy.log");
+        string errors = Path.Combine(Path.GetTempPath(), "FolderSync_Errors.log");
 
         // Journal file
-        string journalFile = Path.Combine(Path.GetTempPath(), "robocopy_log.txt");
+        string journal = Path.Combine(Path.GetTempPath(), "FolderSync_Journal.txt");
 
         bool showJournal = true;
+
+        int filesInSourceFolder = -1;
+        int filesInDesinationFolder = -1;
 
         public Form1()
         {
@@ -35,9 +36,9 @@ namespace FolderSyncWithRoboCopy
             Text = caption;
 
             // If available read the paths of last used directories
-            if (File.Exists(txtFile))
+            if (File.Exists(directories))
             {
-                string[] lines = File.ReadAllLines(txtFile);
+                string[] lines = File.ReadAllLines(directories);
 
                 sourceFolder = lines[0];
                 destinationFolder = lines[1];
@@ -53,19 +54,37 @@ namespace FolderSyncWithRoboCopy
         /// <param name="e"></param>
         private void Form1_Load(object sender, EventArgs e)
         {
+            filesInSourceFolder = CountFiles(sourceFolder);
+            filesInDesinationFolder = CountFiles(destinationFolder);
+
             label_SourceFolder.Text = "Source Folder = " + sourceFolder;
             label_DestinationFolder.Text = "Destination Folder = " + destinationFolder;
 
-            label_SourceAvailable.Text = CountFiles(sourceFolder) + " files currently available";
-            label_DestinationAvailable.Text = CountFiles(destinationFolder) + " files currently available";
+            label_SourceAvailable.Text = filesInSourceFolder + " files currently available";
+            label_DestinationAvailable.Text = filesInDesinationFolder + " files currently available";
 
-            if (CountFiles(destinationFolder) > CountFiles(sourceFolder))
+            if (filesInDesinationFolder > filesInSourceFolder)
             {
                 label_Attention.Visible = true;
             }
             else
             {
                 label_Attention.Visible = false;
+            }
+
+            if (filesInSourceFolder == -1 || filesInDesinationFolder == -1)
+            {
+                button_StartSyncing.Enabled = false;
+            }
+            else
+            {
+                button_StartSyncing.Enabled = true;
+            }
+
+            if (sourceFolder == destinationFolder)
+            {
+                button_StartSyncing.Enabled = false;
+                MessageBox.Show("Please select 2 different folder!", caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -76,12 +95,13 @@ namespace FolderSyncWithRoboCopy
         /// <returns></returns>
         private int CountFiles(string folder)
         {
-            if (Directory.Exists(folder))
+            try
             {
-                return Directory.GetFiles(folder, "*", SearchOption.AllDirectories).Length;
+                return Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories).Length;
             }
-            else
+            catch (Exception ex)
             {
+                MessageBox.Show(ex.Message, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return -1;
             }
         }
@@ -135,57 +155,46 @@ namespace FolderSyncWithRoboCopy
         /// <param name="e"></param>
         private void button_StartSyncing_Click(object sender, EventArgs e)
         {
-            textBox1.Clear();
+            new Thread(StartCopy).Start();
+        }
 
-            if (Directory.Exists(sourceFolder) && Directory.Exists(destinationFolder))
+        private void StartCopy()
+        {
+            // Start Progressbar
+            Invoke((MethodInvoker)delegate () { progressBar1.Style = ProgressBarStyle.Marquee; });
+            Invoke((MethodInvoker)delegate () { progressBar1.MarqueeAnimationSpeed = 100; });
+
+            Invoke((MethodInvoker)delegate () { textBox1.Clear(); });
+
+            // Save the last used folder paths
+            if (File.Exists(directories)) { File.Delete(directories); }
+            File.WriteAllText(directories, sourceFolder + "\r\n" + destinationFolder);
+
+            // Start syncing by using the Windows command "Robocopy"
+            Process process = new Process();
+            process.StartInfo.FileName = "robocopy";
+            process.StartInfo.Arguments = " " + sourceFolder + " " + destinationFolder + " /mir /tee /unilog:" + journal;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow = true;
+            process.Start();
+            process.WaitForExit();
+
+            // Output to TextBox
+            Invoke((MethodInvoker)delegate () { textBox1.Text = File.ReadAllText(journal); });
+            Invoke((MethodInvoker)delegate () { textBox1.Focus(); });
+            Invoke((MethodInvoker)delegate () { textBox1.ScrollToCaret(); });
+
+            // Show Log File
+            if (showJournal)
             {
-                if (sourceFolder != destinationFolder)
-                {
-                    // Save the last used folder paths
-                    if (File.Exists(txtFile)) { File.Delete(txtFile); }
-                    File.WriteAllText(txtFile, sourceFolder + "\r\n" + destinationFolder);
-
-                    // Start syncing by using the Windows command "Robocopy"
-                    Process process = new Process();
-                    process.StartInfo.FileName = "robocopy";
-                    process.StartInfo.Arguments = " " + sourceFolder + " " + destinationFolder + " /mir /tee /unilog:" + journalFile;
-                    process.StartInfo.UseShellExecute = false;
-                    process.StartInfo.CreateNoWindow = true;
-                    process.Start();
-                    process.WaitForExit();
-
-                    // Output to TextBox
-                    textBox1.Clear();
-                    textBox1.Text = File.ReadAllText(journalFile);
-                    textBox1.Focus();
-                    textBox1.ScrollToCaret();
-
-                    // Show Log File
-                    if (showJournal)
-                    {
-                        Process.Start(journalFile);
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Please select 2 different folder!", caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                Process.Start(journal);
             }
-            else
-            {
-                // Source folder cannot be accessed
-                if (!Directory.Exists(sourceFolder))
-                {
-                    MessageBox.Show("Please select valid source folder!", caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
 
-                // Destination folder cannot be accessed
-                if (!Directory.Exists(destinationFolder))
-                {
-                    MessageBox.Show("Please select valid destination folder!", caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            Form1_Load(null, null);
+            // Stop Progressbar
+            Invoke((MethodInvoker)delegate () { progressBar1.Style = ProgressBarStyle.Blocks; });
+            Invoke((MethodInvoker)delegate () { progressBar1.Value = 0; });
+
+            Invoke((MethodInvoker)delegate () { Form1_Load(null, null); });
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
