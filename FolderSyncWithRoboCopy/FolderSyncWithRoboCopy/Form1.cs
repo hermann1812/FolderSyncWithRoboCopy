@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing.Text;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -10,30 +11,24 @@ namespace FolderSyncWithRoboCopy
     public partial class Form1 : Form
     {
         // Caption for MessageBox
-        readonly string caption = "Folder Sync With RoboCopy - " + Assembly.GetEntryAssembly().GetName().Version;
+        public static readonly string caption = "Folder Sync With RoboCopy - " + Assembly.GetEntryAssembly().GetName().Version;
 
-        // Source and destination folder
         string sourceFolder = string.Empty;
         string destinationFolder = string.Empty;
-
-        // The last used directories will be saved in this text file
-        string directories = Path.Combine(Path.GetTempPath(), "FolderSync_Directories.txt");
-
-        // Errors will be logged in this text file (currently not used)
-        string errors = Path.Combine(Path.GetTempPath(), "FolderSync_Errors.log");
-
-        // Journal file
-        string journal = Path.Combine(Path.GetTempPath(), "FolderSync_Journal.txt");
 
         bool showJournal = false;
 
         int filesInSourceFolder = -1;
         int filesInDesinationFolder = -1;
 
-        public Form1()
+        public Form1(string x_directories, string x_errors, string x_journal)
         {
             // Caption for form
             Text = caption;
+
+            directories = x_directories;
+            errors = x_errors;
+            journal = x_journal;
 
             // If available read the paths of last used directories
             if (File.Exists(directories))
@@ -45,7 +40,12 @@ namespace FolderSyncWithRoboCopy
             }
 
             InitializeComponent();
+
         }
+        private static string directories;
+        private static string errors;
+        private static string journal;
+
 
         /// <summary>
         /// Things to be done when form is loaded
@@ -54,8 +54,8 @@ namespace FolderSyncWithRoboCopy
         /// <param name="e"></param>
         private void Form1_Load(object sender, EventArgs e)
         {
-            filesInSourceFolder = CountFiles(sourceFolder);
-            filesInDesinationFolder = CountFiles(destinationFolder);
+            filesInSourceFolder = CountFiles(sourceFolder, errors);
+            filesInDesinationFolder = CountFiles(destinationFolder, errors);
 
             label_SourceFolder.Text = "Source Folder = " + sourceFolder;
             label_DestinationFolder.Text = "Destination Folder = " + destinationFolder;
@@ -84,7 +84,6 @@ namespace FolderSyncWithRoboCopy
             if (sourceFolder == destinationFolder)
             {
                 button_StartSyncing.Enabled = false;
-                MessageBox.Show("Please select 2 different folder!", caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -93,7 +92,7 @@ namespace FolderSyncWithRoboCopy
         /// </summary>
         /// <param name="folder"></param>
         /// <returns></returns>
-        private int CountFiles(string folder)
+        private int CountFiles(string folder, string errors)
         {
             try
             {
@@ -101,7 +100,7 @@ namespace FolderSyncWithRoboCopy
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                File.WriteAllText(errors, ex.Message);
                 return -1;
             }
         }
@@ -155,6 +154,12 @@ namespace FolderSyncWithRoboCopy
         /// <param name="e"></param>
         private void button_StartSyncing_Click(object sender, EventArgs e)
         {
+            button_StartSyncing.Enabled = false;
+
+            // Save the last used folder paths
+            if (File.Exists(directories)) { File.Delete(directories); }
+            File.WriteAllText(directories, sourceFolder + "\r\n" + destinationFolder);
+
             new Thread(StartCopy).Start();
         }
 
@@ -165,10 +170,6 @@ namespace FolderSyncWithRoboCopy
             Invoke((MethodInvoker)delegate () { progressBar1.MarqueeAnimationSpeed = 100; });
 
             Invoke((MethodInvoker)delegate () { textBox1.Clear(); });
-
-            // Save the last used folder paths
-            if (File.Exists(directories)) { File.Delete(directories); }
-            File.WriteAllText(directories, sourceFolder + "\r\n" + destinationFolder);
 
             // Start syncing by using the Windows command "Robocopy"
             Process process = new Process();
