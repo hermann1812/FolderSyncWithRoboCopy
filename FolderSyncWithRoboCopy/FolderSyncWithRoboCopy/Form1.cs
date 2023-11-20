@@ -63,6 +63,10 @@ namespace FolderSyncWithRoboCopy
             label_SourceAvailable.Text = filesInSourceFolder + " files currently available";
             label_DestinationAvailable.Text = filesInDesinationFolder + " files currently available";
 
+            button_ChangeSourceFolder.Enabled = true;
+            button_ChangeDestinationFolder.Enabled = true;
+            checkBox1.Enabled = true;
+
             if (filesInDesinationFolder > filesInSourceFolder)
             {
                 label_Attention.Visible = true;
@@ -155,6 +159,9 @@ namespace FolderSyncWithRoboCopy
         private void button_StartSyncing_Click(object sender, EventArgs e)
         {
             button_StartSyncing.Enabled = false;
+            button_ChangeSourceFolder.Enabled = false;
+            button_ChangeDestinationFolder.Enabled = false;
+            checkBox1.Enabled = false;
 
             // Save the last used folder paths
             if (File.Exists(directories)) { File.Delete(directories); }
