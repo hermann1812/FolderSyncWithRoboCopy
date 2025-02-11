@@ -181,7 +181,7 @@ namespace FolderSyncWithRoboCopy
             // Start syncing by using the Windows command "Robocopy"
             Process process = new Process();
             process.StartInfo.FileName = "robocopy";
-            process.StartInfo.Arguments = " " + sourceFolder + " " + destinationFolder + " /mir /tee /unilog:" + journal;
+            process.StartInfo.Arguments = " \"" + sourceFolder + "\" \"" + destinationFolder + "\" /mir /tee /unilog:\"" + journal + "\"";
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.CreateNoWindow = true;
             process.Start();
